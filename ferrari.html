@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrari: A Symphony of Speed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ferrari-red: #D40000;
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .font-condensed {
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        /* Hide scrollbar */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Vignette effect for a darker, more focused mood */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            box-shadow: inset 0 0 20vw rgba(0,0,0,0.9);
+            z-index: 100;
+        }
+
+        #webgl-canvas, #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            outline: none;
+        }
+        #webgl-canvas { z-index: 1; }
+        #background-canvas { z-index: 0; }
+
+        .content-section {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            padding: 0 5%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            will-change: transform;
+        }
+        .hero-title span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(50px) rotate(10deg);
+        }
+        
+        .section-title .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px) skewY(10deg);
+        }
+        .light-sweep {
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-image: linear-gradient(100deg, #555 30%, #fff 50%, #555 70%);
+            background-size: 300% 100%;
+            animation: sweep 2s ease-in-out forwards;
+        }
+        @keyframes sweep {
+            from { background-position: 150% 0; }
+            to { background-position: -50% 0; }
+        }
+
+        .line-wrap {
+            overflow: hidden;
+            height: 1.5em;
+        }
+        .line-text {
+             display: block;
+             transform: translateY(100%);
+        }
+
+        .spec-item {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+        .loader-text {
+            color: white;
+            font-size: 2rem;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        .cta-button {
+            border: 2px solid var(--ferrari-red);
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            background-color: var(--ferrari-red);
+            box-shadow: 0 0 25px var(--ferrari-red);
+        }
+        .color-swatches {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #555;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .swatch:hover {
+            transform: scale(1.1);
+            border-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader-text">LOADING PASSIONE</div>
+    </div>
+
+    <!-- Background Canvas -->
+    <canvas id="background-canvas"></canvas>
+    <!-- 3D Canvas -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 p-8 z-10 flex justify-between items-center">
+        <div class="text-2xl font-bold font-condensed tracking-widest">FERRARI</div>
+        <nav class="hidden md:flex space-x-8">
+            <a href="#hero" class="hover:text-red-500 transition-colors">Art</a>
+            <a href="#engine" class="hover:text-red-500 transition-colors">Heart</a>
+            <a href="#design" class="hover:text-red-500 transition-colors">Soul</a>
+            <a href="#aero" class="hover:text-red-500 transition-colors">Aero</a>
+            <a href="#heritage" class="hover:text-red-500 transition-colors">Heritage</a>
+            <a href="#cockpit" class="hover:text-red-500 transition-colors">Cockpit</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Sections remain the same, with addition of color swatches -->
+        <section id="hero" class="content-section items-start text-left">
+            <div class="max-w-2xl">
+                <h1 class="hero-title text-6xl md:text-9xl font-bold font-condensed uppercase tracking-wider">
+                    <span>Symphony</span><br><span>of</span> <span>Speed</span>
+                </h1>
+                <p class="mt-8 text-lg text-gray-300 max-w-lg opacity-0" id="hero-p">
+                    Born in Maranello. Forged from passion, precision, and a legacy of victory. This is not just a car; it's a feeling.
+                </p>
+            </div>
+        </section>
+
+        <section id="engine" class="content-section items-end text-right">
+            <div class="max-w-2xl">
+                <h2 class="section-title text-5xl md:text-7xl font-bold font-condensed uppercase">The V12 Heart</h2>
+                <p class="section-paragraph mt-4 text-lg text-gray-300 leading-relaxed">
+                    A naturally aspirated masterpiece. Each engine is a testament to Italian craftsmanship, delivering a crescendo of power that resonates deep within your soul.
+                </p>
+                <div class="mt-12 space-y-6 text-2xl md:text-3xl font-condensed">
+                    <div class="spec-item flex justify-end items-baseline"><span class="text-red-500 mr-4">POWER</span><span>789 BHP</span></div>
+                    <div class="spec-item flex justify-end items-baseline"><span class="text-red-500 mr-4">ENGINE</span><span>6.5L V12</span></div>
+                    <div class="spec-item flex justify-end items-baseline"><span class="text-red-500 mr-4">0-100 KM/H</span><span>2.9 SECONDS</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="design" class="content-section items-start text-left">
+            <div class="max-w-2xl">
+                <h2 class="section-title text-5xl md:text-7xl font-bold font-condensed uppercase">La Bellezza</h2>
+                <p class="section-paragraph mt-4 text-lg text-gray-300 leading-relaxed">
+                    Beauty in form, perfection in function. Every sensuous curve is penned by the wind, a timeless silhouette that is unmistakably, breathtakingly Ferrari.
+                </p>
+                <div class="color-swatches opacity-0">
+                    <div class="swatch" style="background-color: #B40000;" data-color="0xB40000" data-light="0xffeedd"></div>
+                    <div class="swatch" style="background-color: #1E1E1E;" data-color="0x1E1E1E" data-light="0xaaaaaa"></div>
+                    <div class="swatch" style="background-color: #C0C0C0;" data-color="0xC0C0C0" data-light="0xffffff"></div>
+                    <div class="swatch" style="background-color: #FFD700;" data-color="0xFFD700" data-light="0xffffaa"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="aero" class="content-section items-end text-right">
+            <div class="max-w-2xl">
+                <h2 class="section-title text-5xl md:text-7xl font-bold font-condensed uppercase">Air as an Ally</h2>
+                <p class="section-paragraph mt-4 text-lg text-gray-300 leading-relaxed">
+                    Active aerodynamics sculpt the airflow, creating immense downforce with minimal drag. The car becomes one with the road, an extension of your will at any speed.
+                </p>
+            </div>
+        </section>
+
+        <section id="heritage" class="content-section items-start text-left">
+            <div class="max-w-2xl">
+                <h2 class="section-title text-5xl md:text-7xl font-bold font-condensed uppercase">A Legacy of Victory</h2>
+                <p class="section-paragraph mt-4 text-lg text-gray-300 leading-relaxed">
+                    From the Mille Miglia to the peaks of Formula 1, the Prancing Horse has dominated motorsport for decades. Every car we build carries the spirit of the Scuderia within its chassis.
+                </p>
+            </div>
+        </section>
+
+        <section id="cockpit" class="content-section items-end text-right">
+             <div class="max-w-2xl">
+                <h2 class="section-title text-5xl md:text-7xl font-bold font-condensed uppercase">Command Center</h2>
+                <p class="section-paragraph mt-4 text-lg text-gray-300 leading-relaxed">
+                    Ergonomics perfected. Carbon fiber, supple leather, and machined aluminum surround you. Every switch, every dial, is placed with intention, creating a seamless bond between driver and machine.
+                </p>
+            </div>
+        </section>
+
+        <section id="cta" class="content-section items-center text-center">
+             <div class="max-w-2xl">
+                <h2 class="section-title text-5xl md:text-7xl font-bold font-condensed uppercase">Your Legacy Awaits</h2>
+                <p class="section-paragraph mt-4 text-lg text-gray-300 leading-relaxed">
+                    The legend is real. The experience is unforgettable. It's time to write your own chapter.
+                </p>
+                <a href="#" class="cta-button inline-block mt-12 text-xl font-condensed tracking-wider py-4 px-10 rounded-lg text-white opacity-0">
+                    CONFIGURE YOURS
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+
+    <script type="module">
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 2D Background Canvas ---
+        const bgCanvas = document.getElementById('background-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+        let embers = [];
+        for(let i = 0; i < 50; i++) { embers.push({ x: Math.random() * bgCanvas.width, y: Math.random() * bgCanvas.height, size: Math.random() * 1.5 + 0.5, speed: Math.random() * 0.3 + 0.1, opacity: Math.random() * 0.3 + 0.1 }); }
+        function drawEmbers() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            embers.forEach(ember => {
+                bgCtx.beginPath();
+                bgCtx.arc(ember.x, ember.y, ember.size, 0, Math.PI * 2);
+                bgCtx.fillStyle = `rgba(255, 180, 50, ${ember.opacity})`;
+                bgCtx.fill();
+                ember.x -= ember.speed;
+                if (ember.x < 0) { ember.x = bgCanvas.width; ember.y = Math.random() * bgCanvas.height; }
+            });
+            requestAnimationFrame(drawEmbers);
+        }
+        drawEmbers();
+
+
+        // --- 3D Scene Setup ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.querySelector('#webgl-canvas'),
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+
+        // --- Realistic Lighting & Reflections ---
+        new THREE.RGBELoader()
+            .setPath('https://threejs.org/examples/textures/equirectangular/')
+            .load('royal_esplanade_1k.hdr', function (texture) {
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+                scene.environment = texture;
+            });
+        
+        scene.add(new THREE.AmbientLight(0xffffff, 0.02));
+        
+        const keyLight = new THREE.SpotLight(0xffd8b1, 4, 50, Math.PI * 0.1, 0.3);
+        keyLight.position.set(8, 2, 8);
+        scene.add(keyLight);
+        
+        const rimLight = new THREE.SpotLight(0xffeedd, 0.5, 50, Math.PI * 0.1, 1);
+        rimLight.position.set(-10, 5, -15);
+        scene.add(rimLight);
+
+
+        // --- Post Processing ---
+        const renderScene = new THREE.RenderPass(scene, camera);
+        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0.6;
+        bloomPass.strength = 0.3;
+        bloomPass.radius = 0.4;
+        const composer = new THREE.EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        // --- 3D Model Loading ---
+        let carModel = null;
+        const loadingManager = new THREE.LoadingManager();
+        const loaderElement = document.getElementById('loader');
+        
+        loadingManager.onLoad = () => {
+            gsap.to(loaderElement, { opacity: 0, onComplete: () => loaderElement.style.display = 'none' });
+            initAnimations();
+        };
+
+        const dracoLoader = new THREE.DRACOLoader();
+        dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
+        const gltfLoader = new THREE.GLTFLoader(loadingManager);
+        gltfLoader.setDRACOLoader(dracoLoader);
+
+        gltfLoader.load(
+            'https://threejs.org/examples/models/gltf/ferrari.glb',
+            (gltf) => {
+                carModel = gltf.scene;
+                carModel.traverse((child) => {
+                    // FIX: Corrected material name from 'body' to 'Car_Paint_Rosso_Corsa'
+                    if (child.isMesh && child.material.name === 'Car_Paint_Rosso_Corsa') { 
+                        child.material.metalness = 0.9;
+                        child.material.roughness = 0.06; 
+                        child.material.color.set(0xB40000);
+                    }
+                });
+                carModel.scale.set(1.5, 1.5, 1.5);
+                carModel.rotation.y = Math.PI;
+                carModel.position.set(1.5, -1, 0);
+                scene.add(carModel);
+            },
+            undefined,
+            (error) => {
+                console.error('An error happened while loading the model:', error);
+                loaderElement.textContent = "Error Loading Model";
+            }
+        );
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            composer.render();
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+            composer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            bgCanvas.width = width;
+            bgCanvas.height = height;
+        });
+
+        // --- GSAP Animations & Interactivity ---
+        function initAnimations() {
+            function splitText(selector) {
+                document.querySelectorAll(selector).forEach(element => {
+                    let text = element.innerText;
+                    let splitText = text.split('').map(char => `<span class="char">${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+                    element.innerHTML = splitText;
+                });
+            }
+            function splitLines(selector) {
+                 document.querySelectorAll(selector).forEach(p => {
+                    let lines = p.innerText.split('\n').map(line => `<span class="line-wrap"><span class="line-text">${line.trim()}</span></span>`).join('');
+                    p.innerHTML = lines;
+                });
+            }
+
+            splitText('.section-title');
+            splitLines('.section-paragraph');
+
+            gsap.to('.hero-title span', { opacity: 1, y: 0, rotate: 0, stagger: 0.1, duration: 1, ease: 'power3.out', delay: 0.5 });
+            gsap.to('#hero-p', { opacity: 1, y: 0, duration: 1, delay: 1.2 });
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: 'main',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1.5,
+                }
+            });
+
+            if (carModel) {
+                // Scroll timeline remains the same
+                const carDrift = { x: 0.05, y: -0.05, z: 0.05 };
+                tl
+                    .to(carModel.rotation, { y: Math.PI * 0.25, ...carDrift }, 0)
+                    .to(carModel.position, { x: -1.5 }, 0)
+                    .to(camera.position, { z: 4.5 }, 0)
+                    .to(carModel.rotation, { y: Math.PI * 1.75, ...carDrift }, 1)
+                    .to(carModel.position, { x: 1, y: -0.2 }, 1)
+                    .to(camera.position, { z: 5.5 }, 1)
+                    .to(carModel.rotation, { y: Math.PI * 1.25, x: 0.1, ...carDrift }, 2)
+                    .to(carModel.position, { x: -1.8, y: -0.5 }, 2)
+                    .to(camera.position, { z: 4.0 }, 2)
+                    .to(carModel.rotation, { y: Math.PI * 1.9, x: 0, ...carDrift }, 3) 
+                    .to(carModel.position, { x: 1.8, y: -0.7 }, 3)
+                    .to(camera.position, { z: 4.2 }, 3)
+                    .to(carModel.rotation, { y: Math.PI * 0.35, x: 0, ...carDrift }, 4) 
+                    .to(carModel.position, { x: -0.5, y: -0.6 }, 4)
+                    .to(camera.position, { z: 3.5 }, 4)
+                    .to(carModel.rotation, { y: Math.PI * 0.5, x: 0, z: 0 }, 5) 
+                    .to(carModel.position, { x: 0, y: -0.8 }, 5)
+                    .to(camera.position, { z: 6 }, 5);
+            }
+
+            document.querySelectorAll('.content-section').forEach((section) => {
+                const title = section.querySelector('.section-title');
+                const titleChars = section.querySelectorAll('.section-title .char');
+                const paragraphLines = section.querySelectorAll('.section-paragraph .line-text');
+                const specs = section.querySelectorAll('.spec-item');
+                const cta = section.querySelector('.cta-button');
+                const swatches = section.querySelector('.color-swatches');
+                
+                if (title) {
+                    ScrollTrigger.create({
+                        trigger: section,
+                        start: 'top 50%',
+                        onEnter: () => title.classList.add('light-sweep'),
+                        onLeaveBack: () => title.classList.remove('light-sweep')
+                    });
+                }
+                
+                gsap.to(titleChars, {
+                    scrollTrigger: { trigger: section, start: 'top 70%', toggleActions: 'play reverse play reverse' },
+                    opacity: 1, y: 0, skewY: 0, stagger: 0.03, ease: 'power3.out', duration: 0.8
+                });
+
+                if(paragraphLines.length > 0) {
+                    gsap.to(paragraphLines, {
+                        scrollTrigger: { trigger: section, start: 'top 60%', toggleActions: 'play reverse play reverse' },
+                        y: 0, stagger: 0.1, ease: 'power3.out', duration: 1
+                    });
+                }
+
+                gsap.to(specs, {
+                    scrollTrigger: { trigger: section, start: 'top 50%', toggleActions: 'play reverse play reverse' },
+                    opacity: 1, x: 0, stagger: 0.2, ease: 'power3.out', duration: 1
+                });
+                
+                if (swatches) {
+                    gsap.to(swatches, {
+                        scrollTrigger: { trigger: section, start: 'top 40%', toggleActions: 'play reverse play reverse' },
+                        opacity: 1, duration: 1
+                    });
+                }
+
+                if (cta) {
+                     gsap.to(cta, {
+                        scrollTrigger: { trigger: section, start: 'top 40%', toggleActions: 'play reverse play reverse' },
+                        opacity: 1, y: 0, duration: 1
+                    });
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 15;
+                const y = -(e.clientY / window.innerHeight - 0.5) * 10;
+                gsap.to(keyLight.position, {
+                    x: 8 + x,
+                    y: 2 + y,
+                    duration: 1,
+                    ease: 'power2.out'
+                });
+                 gsap.to(camera.position, {
+                    x: x * 0.05,
+                    y: y * 0.05,
+                    duration: 2,
+                    ease: 'power3.out'
+                });
+                camera.lookAt(scene.position);
+            });
+
+            document.querySelectorAll('.swatch').forEach(swatch => {
+                swatch.addEventListener('click', () => {
+                    if (carModel) {
+                        const newCarColor = parseInt(swatch.dataset.color);
+                        const newLightColor = parseInt(swatch.dataset.light);
+
+                        carModel.traverse((child) => {
+                            // FIX: Corrected material name from 'body' to 'Car_Paint_Rosso_Corsa'
+                            if (child.isMesh && child.material.name === 'Car_Paint_Rosso_Corsa') {
+                                gsap.to(child.material.color, {
+                                    r: (newCarColor >> 16 & 255) / 255,
+                                    g: (newCarColor >> 8 & 255) / 255,
+                                    b: (newCarColor & 255) / 255,
+                                    duration: 0.5,
+                                    ease: 'power2.inOut'
+                                });
+                            }
+                        });
+
+                        gsap.to(rimLight.color, {
+                            r: (newLightColor >> 16 & 255) / 255,
+                            g: (newLightColor >> 8 & 255) / 255,
+                            b: (newLightColor & 255) / 255,
+                            duration: 0.5,
+                            ease: 'power2.inOut'
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashwin A - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #0A0F1E;
+            --primary: #FF00FF; /* Magenta */
+            --secondary: #00F5FF; /* Cyan */
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --border-color: rgba(255, 0, 255, 0.2);
+            --text-light: #E6E6FA;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        a, .btn, .magnetic { cursor: none; }
+
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark-bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .loader-orb { width: 50px; height: 50px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 50px var(--primary); }
+
+        #cursor-dot { position: fixed; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 9999; mix-blend-mode: difference; }
+        #cursor-outline { position: fixed; width: 40px; height: 40px; border: 2px solid var(--primary); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 9999; transition: transform 0.3s ease-out, width 0.3s, height 0.3s, background-color 0.3s; mix-blend-mode: difference; }
+
+        #aurora-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; opacity: 0.5; }
+
+        .section { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 8rem 2rem; position: relative; }
+        .main-container { max-width: 1100px; width: 100%; }
+
+        #projects { padding: 0; overflow: hidden; position: relative; }
+        #projects-container { height: 100vh; display: flex; flex-wrap: nowrap; align-items: center; padding: 0 5vw; width: 300%; }
+        .project-wrapper { width: 100%; padding: 0 4rem; flex-shrink: 0; }
+        #projects-progress { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 30%; height: 2px; background-color: rgba(255, 0, 255, 0.2); border-radius: 2px; }
+        #progress-bar { width: 0%; height: 100%; background-color: var(--primary); border-radius: 2px; }
+
+        #navbar { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: auto; padding: 0.5rem 1rem; background: rgba(10, 15, 30, 0.8); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 9999px; z-index: 500; }
+        #navbar a { padding: 0.5rem 1rem; color: white; font-weight: 500; border-radius: 9999px; transition: background-color 0.3s, color 0.3s; }
+        #navbar a:hover, #navbar a.active { background-color: var(--primary); color: var(--dark-bg); }
+
+        .btn { background-color: transparent; border: 2px solid var(--primary); color: var(--primary); font-weight: bold; padding: 0.75rem 1.5rem; border-radius: 9999px; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; position: relative; overflow: hidden; }
+        .btn:hover { background-color: var(--primary); color: var(--dark-bg); transform: translateY(-3px); box-shadow: 0 7px 15px rgba(255, 0, 255, 0.1); }
+        .btn-primary { background-color: var(--primary); color: var(--dark-bg); }
+        .btn-primary:hover { background-color: #FF33FF; border-color: #FF33FF; }
+        
+        .card { background-color: var(--card-bg); backdrop-filter: blur(10px); padding: 2.5rem; height: 100%; position: relative; border: 1px solid var(--border-color); transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease; border-radius: 20px; overflow: hidden; }
+        .card-glow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 20px; box-shadow: 0 0 0px var(--primary); transition: box-shadow 0.4s ease; pointer-events: none; }
+        .card:hover .card-glow { box-shadow: 0 0 30px var(--primary); }
+        .tag { background-color: #3D1E3D; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+        
+        .section-title { font-family: 'Roboto Condensed', sans-serif; font-size: 3.5rem; font-weight: 700; text-align: center; margin-bottom: 4rem; }
+        .hero-title { font-family: 'Roboto Condensed', sans-serif; }
+        .hero-title span { display: inline-block; }
+    </style>
+</head>
+<body>
+    <div id="preloader"><div class="loader-orb"></div></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+
+    <div id="page-container">
+        <canvas id="aurora-background"></canvas>
+        <nav id="navbar">
+            <div class="flex gap-2">
+                <a data-scroll-to="#about" class="magnetic">About</a>
+                <a data-scroll-to="#education" class="magnetic">Education</a>
+                <a data-scroll-to="#projects" class="magnetic">Projects</a>
+                <a data-scroll-to="#skills" class="magnetic">Skills</a>
+                <a data-scroll-to="#contact" class="magnetic">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="section" id="hero">
+            <div class="main-container text-center">
+                 <p class="text-lg text-gray-400 mb-4 anim-el">
+                    Crafting Digital Experiences, One Line of Code at a Time.
+                </p>
+                <h1 class="text-7xl md:text-8xl font-black tracking-tighter hero-title">
+                    ASHWIN A
+                </h1>
+                <p class="text-xl text-cyan-300 mt-4 anim-el">
+                    Full-Stack Developer & Creative Technologist
+                </p>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section class="section" id="about">
+            <div class="main-container grid md:grid-cols-2 gap-12 items-center">
+                <div class="relative h-96 anim-el">
+                     <div class="card w-full h-full p-8 flex flex-col justify-center">
+                        <div class="card-glow"></div>
+                        <h2 class="text-3xl font-bold mb-4 hero-title">ABOUT ME</h2>
+                        <p class="text-gray-300">I am eager to apply my skills in building innovative and user-friendly applications. I have experience working on multiple ERP Systems using Odoo and developing software applications with Electron.js.</p>
+                    </div>
+                    <img src="https://i.ibb.co/bF0S9QW/astronaut.png" alt="Astronaut" id="astronaut" class="absolute -bottom-20 -right-20 w-48 h-auto transform rotate-12 z-20">
+                </div>
+                 <div class="text-lg text-gray-300 space-y-4 anim-el">
+                    <p>A passionate MCA student with a strong foundation in full-stack development and a love for creative pursuits like graphic design and animation.</p>
+                    <div class="flex gap-4 pt-4">
+                        <a href="https://www.linkedin.com/in/ashwinambar" target="_blank" class="btn btn-primary magnetic"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                        <a href="https://github.com/Ashwin-A21" target="_blank" class="btn magnetic"><i class="fab fa-github"></i> GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section class="section" id="education">
+            <div class="main-container">
+                <h2 class="section-title anim-el">EDUCATION</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl">Master of Computer Applications</h3><p class="text-cyan-300">St Agnes College (Autonomous), Mangaluru</p><p class="text-gray-400 text-sm">2023 - 2025 (Pursuing)</p></div>
+                    <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl">Bachelor of Computer Applications</h3><p class="text-cyan-300">Dr. P. Dayananda Pai - P. Satisha Pai GFGC, Mangalore</p><p class="text-gray-400 text-sm">2020 - 2023 | 8.07 CGPA</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section (Horizontal Scroll) -->
+        <section class="section" id="projects">
+            <div id="projects-container">
+                <!-- Slide 1 -->
+                <div class="project-wrapper">
+                    <h2 class="section-title anim-el">PROJECTS</h2>
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl mb-2">IndiGo - Gov Portal</h3><p class="text-gray-300 text-sm mb-4">Portal for accessing government projects, schemes, and job opportunities.</p><div class="flex flex-wrap gap-2"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JS</span><span class="tag">PHP</span></div></div>
+                        <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl mb-2">Yummy Tummy</h3><p class="text-gray-300 text-sm mb-4">A food delivery website for ordering meals and managing restaurant menus.</p><div class="flex flex-wrap gap-2"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JS</span><span class="tag">PHP</span></div></div>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="project-wrapper">
+                    <h2 class="section-title text-transparent">PROJECTS</h2>
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl mb-2">Kreatica - Interior Design</h3><p class="text-gray-300 text-sm mb-4">Interactive website showcasing interior designs with an integrated support chatbot.</p><div class="flex flex-wrap gap-2"><span class="tag">Three.js</span><span class="tag">Node.js</span></div></div>
+                        <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl mb-2">AG Cafe – Cafeteria Mngmt</h3><p class="text-gray-300 text-sm mb-4">Desktop system for managing cafeteria orders, inventory, and billing.</p><div class="flex flex-wrap gap-2"><span class="tag">Django</span><span class="tag">Python</span></div></div>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="project-wrapper">
+                    <h2 class="section-title text-transparent">PROJECTS</h2>
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl mb-2">Canteen Mngmt System</h3><p class="text-gray-300 text-sm mb-4">An online canteen management system for streamlined operations.</p><div class="flex flex-wrap gap-2"><span class="tag">Java</span></div></div>
+                        <div class="card anim-el"><div class="card-glow"></div><h3 class="font-bold text-xl mb-2">ERP & Desktop Apps</h3><p class="text-gray-300 text-sm mb-4">Worked on multiple ERP Systems and developed software applications.</p><div class="flex flex-wrap gap-2"><span class="tag">Odoo</span><span class="tag">Electron.js</span></div></div>
+                    </div>
+                </div>
+            </div>
+            <div id="projects-progress"><div id="progress-bar"></div></div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="section" id="skills">
+            <div class="main-container">
+                <h2 class="section-title anim-el">SKILLS</h2>
+                <div class="card anim-el">
+                    <div class="card-glow"></div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div><h4 class="font-bold text-lg mb-3">Computer Skills</h4><div class="flex flex-wrap gap-2"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Python</span><span class="tag">C/C++</span><span class="tag">C#</span><span class="tag">Java</span><span class="tag">PHP</span><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MongoDB</span><span class="tag">Odoo17</span></div></div>
+                        <div><h4 class="font-bold text-lg mb-3">Other Skills</h4><div class="flex flex-wrap gap-2"><span class="tag">Leadership</span><span class="tag">Teamwork</span><span class="tag">Problem Solving</span><span class="tag">Time Management</span></div></div>
+                        <div><h4 class="font-bold text-lg mb-3">Interests</h4><div class="flex flex-wrap gap-2"><span class="tag">Graphic Design</span><span class="tag">Drawing</span><span class="tag">Animation</span></div></div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-600"><h4 class="font-bold text-lg mb-3">Certifications</h4><p><i class="fas fa-certificate text-cyan-300 mr-2"></i> Full Stack Web Development – Udemy (Completed July 2024)</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section" id="contact">
+            <div class="main-container text-center">
+                <h2 class="section-title anim-el">CONTACT</h2>
+                <p class="text-gray-400 mb-6 max-w-lg mx-auto anim-el">I'm currently seeking new opportunities. Feel free to reach out if you have a project in mind or just want to connect.</p>
+                <p class="mb-2 anim-el"><a href="mailto:ashwinambar2002@gmail.com" class="text-xl hover:text-cyan-300 transition-colors magnetic">ashwinambar2002@gmail.com</a></p>
+                <p class="mb-6 anim-el"><a href="tel:+918113812257" class="text-xl hover:text-cyan-300 transition-colors magnetic">+91-8113812257</a></p>
+                <div class="flex justify-center gap-6 text-3xl mb-8 anim-el"><a href="https://www.linkedin.com/in/ashwinambar" target="_blank" class="hover:text-cyan-300 transition-colors magnetic"><i class="fab fa-linkedin"></i></a><a href="https://github.com/Ashwin-A21" target="_blank" class="hover:text-cyan-300 transition-colors magnetic"><i class="fab fa-github"></i></a></div>
+                <p class="text-gray-500 text-sm mt-8 anim-el">Designed & Developed by Ashwin A</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+            // --- Preloader ---
+            const preloader = document.getElementById('preloader');
+            const loaderOrb = document.querySelector('.loader-orb');
+            gsap.to(loaderOrb, { scale: 100, duration: 1.5, ease: 'power3.inOut', delay: 1, onComplete: () => {
+                preloader.style.display = 'none';
+                initPageAnimations();
+            }});
+            
+            // --- Custom Cursor & Magnetic Effect ---
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            const magneticElements = document.querySelectorAll('.magnetic');
+            window.addEventListener('mousemove', e => {
+                gsap.to(cursorDot, { duration: 0.2, x: e.clientX, y: e.clientY });
+                gsap.to(cursorOutline, { duration: 0.3, x: e.clientX, y: e.clientY });
+            });
+            magneticElements.forEach(el => {
+                el.addEventListener('mouseenter', () => gsap.to(cursorOutline, { duration: 0.3, scale: 1.5, backgroundColor: 'rgba(255, 0, 255, 0.2)' }));
+                el.addEventListener('mouseleave', () => gsap.to(cursorOutline, { duration: 0.3, scale: 1, backgroundColor: 'transparent' }));
+                el.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    gsap.to(this, { duration: 0.3, x: (e.clientX - rect.left - rect.width / 2) * 0.3, y: (e.clientY - rect.top - rect.height / 2) * 0.3, ease: 'power2.out' });
+                });
+                el.addEventListener('mouseleave', function(e) {
+                    gsap.to(this, { duration: 0.3, x: 0, y: 0, ease: 'elastic.out(1, 0.3)' });
+                });
+            });
+
+            function initPageAnimations() {
+                // --- Hero "Stardust" Text Reveal ---
+                const heroTitle = document.querySelector('.hero-title');
+                const chars = heroTitle.textContent.split('');
+                heroTitle.innerHTML = chars.map(char => `<span style="opacity:0;">${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+                gsap.to(heroTitle.querySelectorAll('span'), {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.01,
+                    stagger: {
+                        each: 0.05,
+                        from: "random"
+                    },
+                    ease: 'power3.out'
+                });
+
+                // --- Staggered Reveal Animation on Scroll ---
+                gsap.utils.toArray('.anim-el').forEach(el => {
+                    gsap.from(el, {
+                        y: 50,
+                        opacity: 0,
+                        duration: 1.2,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 90%',
+                        }
+                    });
+                });
+
+                // --- Horizontal Scroll for Projects Section ---
+                const projectsContainer = document.querySelector("#projects-container");
+                const projectsSection = document.querySelector("#projects");
+                const progressBar = document.querySelector("#progress-bar");
+                gsap.to(projectsContainer, {
+                    x: () => -(projectsContainer.scrollWidth - projectsSection.offsetWidth),
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: projectsSection,
+                        start: "top top",
+                        end: () => "+=" + (projectsContainer.scrollWidth - projectsSection.offsetWidth),
+                        scrub: true,
+                        pin: true,
+                        invalidateOnRefresh: true,
+                        anticipatePin: 1,
+                        onUpdate: self => gsap.to(progressBar, { width: self.progress * 100 + '%' })
+                    }
+                });
+
+                // --- Navbar Active State & Scrolling ---
+                const sections = gsap.utils.toArray('.section');
+                const navLinks = gsap.utils.toArray('#navbar a');
+                sections.forEach((section, i) => {
+                    ScrollTrigger.create({
+                        trigger: section,
+                        start: 'top center',
+                        end: 'bottom center',
+                        onToggle: self => self.isActive && setActive(navLinks[i])
+                    });
+                });
+                function setActive(link) {
+                    navLinks.forEach(el => el.classList.remove('active'));
+                    if(link) link.classList.add('active');
+                }
+                navLinks.forEach(anchor => {
+                    anchor.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        let targetElem = document.querySelector(this.getAttribute("data-scroll-to"));
+                        if(targetElem) {
+                            gsap.to(window, { scrollTo: { y: targetElem, offsetY: 0 }, duration: 1.5, ease: "power3.inOut" });
+                        }
+                    });
+                });
+                
+                // --- Card Tilt Effect ---
+                document.querySelectorAll('.card').forEach(card => {
+                    card.addEventListener("mousemove", e => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -5;
+                        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 5;
+                        gsap.to(card, { duration: 0.5, rotationX: rotateX, rotationY: rotateY, transformPerspective: 1000, ease: "power1.out" });
+                    });
+                    card.addEventListener("mouseleave", () => {
+                        gsap.to(card, { duration: 0.5, rotationX: 0, rotationY: 0, ease: "power1.out" });
+                    });
+                });
+
+                // --- Parallax Astronaut ---
+                gsap.to("#astronaut", { y: -50, rotation: 15, scrollTrigger: { trigger: "#about", start: "top bottom", end: "bottom top", scrub: true } });
+            }
+
+            // --- Aurora Background ---
+            const canvas = document.getElementById('aurora-background');
+            const ctx = canvas.getContext('2d');
+            let triangles = [];
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                triangles = [];
+                for (let i = 0; i < 30; i++) {
+                    triangles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        size: Math.random() * 200 + 100,
+                        speedX: (Math.random() - 0.5) * 0.5,
+                        speedY: (Math.random() - 0.5) * 0.5,
+                        color: `hsla(${Math.random() * 60 + 270}, 100%, 50%, ${Math.random() * 0.2})`
+                    });
+                }
+            }
+
+            function animateAurora() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                triangles.forEach(t => {
+                    t.x += t.speedX;
+                    t.y += t.speedY;
+                    if (t.x > canvas.width + t.size || t.x < -t.size) t.speedX *= -1;
+                    if (t.y > canvas.height + t.size || t.y < -t.size) t.speedY *= -1;
+
+                    ctx.beginPath();
+                    ctx.moveTo(t.x, t.y);
+                    ctx.lineTo(t.x + t.size, t.y + t.size);
+                    ctx.lineTo(t.x - t.size, t.y + t.size * 1.5);
+                    ctx.closePath();
+                    ctx.fillStyle = t.color;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animateAurora);
+            }
+            
+            resizeCanvas();
+            animateAurora();
+            window.addEventListener('resize', resizeCanvas);
+        });
+    </script>
+</body>
+</html>
