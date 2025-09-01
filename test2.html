@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Level UI/UX</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-color: #030712;
+            color: #f9fafb;
+        }
+
+        /* The three.js canvas will be fixed in the background */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        /* Custom scrollbar for better UX */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 4px;
+        }
+
+        /* Hero container for the GSAP pinning effect */
+        .hero-container {
+            will-change: transform, opacity;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-50">
+    <!-- Three.js Canvas -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Main content container -->
+    <main class="relative z-10">
+
+        <!-- Hero Section -->
+        <section class="min-h-screen flex flex-col items-center justify-center p-8 text-center" id="hero-section">
+            <div class="hero-container">
+                <h1 class="text-6xl md:text-8xl font-bold mb-4 leading-tight text-white hero-title">
+                    Crafting Digital <br> Experiences
+                </h1>
+                <p class="text-lg md:text-xl max-w-2xl text-gray-300 mb-8 hero-subtitle">
+                    Where great design meets seamless interaction. Discover the future of web interfaces.
+                </p>
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hero-button">
+                    Learn More
+                </button>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="py-24 px-8 md:px-16 lg:px-24 bg-gray-900 about-section">
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white section-title">About Our Approach</h2>
+                    <p class="text-lg text-gray-400 section-text">
+                        We believe that a truly exceptional website is a blend of artistry and engineering. Our process is centered on understanding user needs and translating them into intuitive and elegant digital products.
+                    </p>
+                    <p class="text-lg text-gray-400 section-text">
+                        Using cutting-edge technologies like GSAP and Three.js, we bring static designs to life, creating immersive and memorable interactions that captivate audiences.
+                    </p>
+                </div>
+                <div class="relative w-full aspect-square bg-gray-800 rounded-3xl overflow-hidden shadow-2xl section-image">
+                    <img src="https://placehold.co/800x800/223344/ffffff?text=Design" alt="Design sketch" class="w-full h-full object-cover rounded-3xl">
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="py-24 px-8 md:px-16 lg:px-24">
+            <h2 class="text-center text-4xl md:text-5xl font-bold mb-16 text-white services-title">Our Services</h2>
+            <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="bg-gray-800 p-8 rounded-2xl shadow-xl hover:bg-gray-700 transition duration-300 ease-in-out transform hover:scale-105 service-card">
+                    <h3 class="text-2xl font-semibold mb-4 text-white">Interactive Development</h3>
+                    <p class="text-gray-400">
+                        We build websites that respond to user actions with fluid animations and engaging visual feedback.
+                    </p>
+                </div>
+                <!-- Service Card 2 -->
+                <div class="bg-gray-800 p-8 rounded-2xl shadow-xl hover:bg-gray-700 transition duration-300 ease-in-out transform hover:scale-105 service-card">
+                    <h3 class="text-2xl font-semibold mb-4 text-white">UX/UI Design</h3>
+                    <p class="text-gray-400">
+                        Our designs are rooted in user research, ensuring every interface is intuitive, accessible, and beautiful.
+                    </p>
+                </div>
+                <!-- Service Card 3 -->
+                <div class="bg-gray-800 p-8 rounded-2xl shadow-xl hover:bg-gray-700 transition duration-300 ease-in-out transform hover:scale-105 service-card">
+                    <h3 class="text-2xl font-semibold mb-4 text-white">3D Web Experiences</h3>
+                    <p class="text-gray-400">
+                        Leverage the power of WebGL and Three.js to create stunning, performant 3D experiences directly in the browser.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="py-24 px-8 md:px-16 lg:px-24 bg-gray-900 contact-section">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white contact-title">Ready to Start?</h2>
+                <p class="text-lg text-gray-400 mb-8 contact-subtitle">
+                    Let's create something incredible together. Reach out to us for a personalized consultation.
+                </p>
+                <a href="#" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 contact-button">
+                    Get in Touch
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        window.onload = () => {
+            // --- GSAP Setup and Animations ---
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Hero section animations on load
+            const heroTl = gsap.timeline();
+            heroTl.from('.hero-title', { duration: 1.2, opacity: 0, y: 50, ease: 'power3.out' });
+            heroTl.from('.hero-subtitle', { duration: 1.2, opacity: 0, y: 50, ease: 'power3.out' }, '<0.2');
+            heroTl.from('.hero-button', { duration: 1.2, opacity: 0, y: 50, ease: 'power3.out' }, '<0.2');
+
+            // Hero section scroll effect with pinning
+            gsap.to('.hero-container', {
+                scale: 0.8,
+                opacity: 0,
+                ease: 'power1.in',
+                scrollTrigger: {
+                    trigger: '#hero-section',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: true,
+                    pin: true,
+                }
+            });
+
+            // GSAP ScrollTrigger animations for other sections
+            gsap.utils.toArray('section').forEach((section, i) => {
+                if (i !== 0) { // Skip the hero section
+                    const title = section.querySelector('.section-title, .services-title, .contact-title');
+                    const text = section.querySelectorAll('.section-text, .service-card, .contact-subtitle, .contact-button');
+                    const image = section.querySelector('.section-image');
+
+                    const tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: section,
+                            start: 'top 80%',
+                            end: 'bottom 20%',
+                            toggleActions: 'play none none none',
+                        }
+                    });
+
+                    if (title) {
+                        tl.from(title, { duration: 1, opacity: 0, y: 50, ease: 'power2.out' });
+                    }
+
+                    if (image) {
+                        tl.from(image, { duration: 1, opacity: 0, x: -50, ease: 'power2.out' }, '<0.2');
+                    }
+
+                    if (text) {
+                        tl.from(text, { duration: 1, opacity: 0, y: 30, stagger: 0.2, ease: 'power2.out' }, '<0.4');
+                    }
+                }
+            });
+
+            // --- Three.js Setup and Animation ---
+            const canvas = document.getElementById('three-canvas');
+            const sizes = {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
+            camera.position.z = 5;
+            scene.add(camera);
+
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true
+            });
+            renderer.setSize(sizes.width, sizes.height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Particle System with connecting lines
+            const particleCount = 500;
+            const positions = new Float32Array(particleCount * 3);
+            const particleVertices = [];
+            const particleColor = new THREE.Color(0x6366f1); // Tailwind indigo-500
+            for (let i = 0; i < particleCount; i++) {
+                const x = (Math.random() - 0.5) * 10;
+                const y = (Math.random() - 0.5) * 10;
+                const z = (Math.random() - 0.5) * 10;
+                positions[i * 3] = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+                particleVertices.push(new THREE.Vector3(x, y, z));
+            }
+
+            const pointsGeometry = new THREE.BufferGeometry();
+            pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const pointsMaterial = new THREE.PointsMaterial({
+                size: 0.05,
+                color: particleColor,
+                sizeAttenuation: true,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 1
+            });
+            const particles = new THREE.Points(pointsGeometry, pointsMaterial);
+            scene.add(particles);
+
+            // Lines to connect the particles
+            const lineGeometry = new THREE.BufferGeometry();
+            const linePositions = new Float32Array(particleCount * 3 * 2); // Max possible lines
+            lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3).setUsage(THREE.DynamicDrawUsage));
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: 0x6366f1,
+                transparent: true,
+                opacity: 0.5,
+                blending: THREE.AdditiveBlending
+            });
+            const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+            scene.add(lines);
+
+            const mouse = new THREE.Vector2();
+            window.addEventListener('mousemove', (event) => {
+                mouse.x = (event.clientX / sizes.width) * 2 - 1;
+                mouse.y = -(event.clientY / sizes.height) * 2 + 1;
+            });
+
+            window.addEventListener('resize', () => {
+                sizes.width = window.innerWidth;
+                sizes.height = window.innerHeight;
+                camera.aspect = sizes.width / sizes.height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(sizes.width, sizes.height);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            });
+
+            // Animation Loop
+            const clock = new THREE.Clock();
+            const animate = () => {
+                const elapsedTime = clock.getElapsedTime();
+
+                // Rotate particles and lines
+                particles.rotation.y = elapsedTime * 0.05;
+                lines.rotation.y = elapsedTime * 0.05;
+
+                // Update line connections
+                let lineIndex = 0;
+                for (let i = 0; i < particleCount; i++) {
+                    const p1 = particleVertices[i];
+                    for (let j = i + 1; j < particleCount; j++) {
+                        const p2 = particleVertices[j];
+                        const distance = p1.distanceTo(p2);
+                        if (distance < 1.5) {
+                            linePositions[lineIndex++] = p1.x;
+                            linePositions[lineIndex++] = p1.y;
+                            linePositions[lineIndex++] = p1.z;
+                            linePositions[lineIndex++] = p2.x;
+                            linePositions[lineIndex++] = p2.y;
+                            linePositions[lineIndex++] = p2.z;
+                        }
+                    }
+                }
+                lineGeometry.setDrawRange(0, lineIndex);
+                lineGeometry.attributes.position.needsUpdate = true;
+
+                // Parallax effect
+                camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.05;
+                camera.position.y += (mouse.y * 0.5 - camera.position.y) * 0.05;
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+                renderer.render(scene, camera);
+                window.requestAnimationFrame(animate);
+            };
+
+            animate();
+        };
+    </script>
+</body>
+</html>
