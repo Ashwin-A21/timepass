@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Rotating Object</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        canvas {
+            display: block;
+            touch-action: none; /* Prevents default browser actions like scrolling on touch devices */
+        }
+    </style>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Global variables for the scene, camera, renderer, and object
+    let scene, camera, renderer, geometry, material, mesh;
+
+    // Mouse control variables
+    let isMouseDown = false;
+    let mouseX = 0;
+    let mouseY = 0;
+
+    /**
+     * Initializes the Three.js scene, camera, renderer, and adds the main object.
+     */
+    function init() {
+        // 1. Create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+
+        // 2. Create the camera
+        const aspect = window.innerWidth / window.innerHeight;
+        camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+        camera.position.z = 2;
+
+        // 3. Create the renderer
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 4. Create the object (a Torus Knot)
+        geometry = new THREE.TorusKnotGeometry(0.5, 0.2, 100, 16);
+        // Changed material to a basic lit material with a specific color
+        material = new THREE.MeshLambertMaterial({ color: 0x00ffff }); 
+        mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // 5. Add lighting for better depth
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5).normalize();
+        scene.add(light);
+
+        // Add event listeners for interactivity
+        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('mousedown', onMouseDown, false);
+        window.addEventListener('mouseup', onMouseUp, false);
+        window.addEventListener('mousemove', onMouseMove, false);
+        window.addEventListener('touchstart', onTouchStart, false);
+        window.addEventListener('touchend', onTouchEnd, false);
+        window.addEventListener('touchmove', onTouchMove, false);
+    }
+
+    /**
+     * Handles window resizing to keep the scene responsive.
+     */
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    /**
+     * Animation loop to continuously render the scene.
+     */
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // Rotate the mesh on its own
+        mesh.rotation.x += 0.005;
+        mesh.rotation.y += 0.005;
+
+        renderer.render(scene, camera);
+    }
+
+    /**
+     * Mouse event handlers for camera control.
+     */
+    function onMouseDown(event) {
+        isMouseDown = true;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    }
+
+    function onMouseUp(event) {
+        isMouseDown = false;
+    }
+
+    function onMouseMove(event) {
+        if (!isMouseDown) return;
+
+        const deltaX = event.clientX - mouseX;
+        const deltaY = event.clientY - mouseY;
+
+        // Rotate the mesh based on mouse movement
+        mesh.rotation.y += deltaX * 0.005;
+        mesh.rotation.x += deltaY * 0.005;
+
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    }
+
+    /**
+     * Touch event handlers for camera control.
+     */
+    function onTouchStart(event) {
+        if (event.touches.length === 1) {
+            isMouseDown = true;
+            mouseX = event.touches[0].clientX;
+            mouseY = event.touches[0].clientY;
+        }
+    }
+
+    function onTouchEnd(event) {
+        isMouseDown = false;
+    }
+
+    function onTouchMove(event) {
+        if (!isMouseDown) return;
+
+        const deltaX = event.touches[0].clientX - mouseX;
+        const deltaY = event.touches[0].clientY - mouseY;
+
+        // Rotate the mesh based on touch movement
+        mesh.rotation.y += deltaX * 0.005;
+        mesh.rotation.x += deltaY * 0.005;
+
+        mouseX = event.touches[0].clientX;
+        mouseY = event.touches[0].clientY;
+    }
+
+    // Start the application on window load.
+    window.onload = function() {
+        init();
+        animate();
+    };
+</script>
+
+</body>
+</html>

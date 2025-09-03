@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Motion Design</title>
+    <!-- Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f0f0;
+            color: #1a1a1a;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e0e0e0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 4px;
+        }
+
+        /* Full-screen canvas for the Three.js scene */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        /* Overlay content to sit on top of the canvas */
+        .content-overlay {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Base animation styles for elements that will fade in and slide up */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            transition-delay: var(--delay, 0s);
+        }
+
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Paragraph Hover Effects - Text Fill */
+        .text-fill-hover {
+            -webkit-text-stroke: 1px #8A2BE2;
+            color: transparent;
+            cursor: pointer;
+            transition: color 0.5s ease;
+        }
+        .text-fill-hover:hover {
+            color: #8A2BE2;
+            text-shadow: 0 0 10px #8A2BE2, 0 0 20px #8A2BE2;
+        }
+
+        /* Glitch text effect for hero headings */
+        .glitch {
+            position: relative;
+        }
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.3s ease;
+        }
+        .glitch::before {
+            left: 1px;
+            text-shadow: -1px 0px rgba(255, 0, 193, 0.4);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -1px;
+            text-shadow: -1px 0px rgba(0, 255, 255, 0.4);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(45% 0 10% 0); }
+            20% { clip-path: inset(90% 0 1% 0); }
+            40% { clip-path: inset(55% 0 5% 0); }
+            60% { clip-path: inset(15% 0 70% 0); }
+            80% { clip-path: inset(70% 0 5% 0); }
+            100% { clip-path: inset(45% 0 10% 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(70% 0 5% 0); }
+            20% { clip-path: inset(15% 0 70% 0); }
+            40% { clip-path: inset(90% 0 1% 0); }
+            60% { clip-path: inset(45% 0 10% 0); }
+            80% { clip-path: inset(55% 0 5% 0); }
+            100% { clip-path: inset(70% 0 5% 0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+    <canvas id="three-canvas"></canvas>
+
+    <div class="content-overlay">
+        <!-- Main Hero Section -->
+        <div class="min-h-screen w-full flex flex-col items-center justify-center p-8 text-center relative">
+            <h1 class="text-6xl md:text-8xl font-bold leading-tight animate-on-scroll glitch" data-text="AESTHETIC." style="--delay: 0.2s;">
+                AESTHETIC.
+            </h1>
+            <h1 class="text-6xl md:text-8xl font-bold leading-tight animate-on-scroll glitch" data-text="CODE." style="--delay: 0.4s;">
+                CODE.
+            </h1>
+            <h1 class="text-6xl md:text-8xl font-bold leading-tight animate-on-scroll glitch" data-text="MOTION." style="--delay: 0.6s;">
+                MOTION.
+            </h1>
+            <p class="text-xl md:text-2xl mt-4 max-w-2xl text-gray-700 animate-on-scroll" style="--delay: 0.8s;">
+                Dive into a realm where design meets dynamic motion, crafted with clean, modern precision.
+            </p>
+        </div>
+
+        <!-- Scrollable content sections -->
+        <div class="px-8 md:px-16 py-12">
+            <!-- Section 1 -->
+            <div class="container mx-auto max-w-4xl py-24">
+                <h2 class="text-5xl md:text-7xl font-light mb-8 animate-on-scroll">
+                    A clean foundation for your ideas.
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-600 mb-12 animate-on-scroll text-fill-hover">
+                    Every element is designed to feel intentional and fluid, allowing your content to breathe. We build the scaffolding for your vision with minimalism at its core.
+                </p>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="container mx-auto max-w-4xl py-24">
+                <h2 class="text-5xl md:text-7xl font-light mb-8 animate-on-scroll">
+                    Dynamic interactions, not distractions.
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-600 mb-12 animate-on-scroll text-fill-hover">
+                    Our subtle, yet engaging, micro-interactions guide the user's eye and enrich the experience, creating a memorable journey without overwhelming the senses.
+                </p>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="container mx-auto max-w-4xl py-24">
+                <h2 class="text-5xl md:text-7xl font-light mb-8 animate-on-scroll">
+                    Your vision,
+                </h2>
+                <h2 class="text-5xl md:text-7xl font-light mb-8 animate-on-scroll">
+                    perfectly realized.
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-600 mb-12 animate-on-scroll text-fill-hover">
+                    From concept to creation, we craft designs that are as functional as they are beautiful, ensuring every detail contributes to the overall narrative.
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Three.js and GSAP libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script>
+        window.onload = function () {
+            // --- Scene Setup ---
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0xf0f0f0, 0.03); // Light theme fog
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // --- 3D Model with a Shader ---
+            const geometry = new THREE.TorusKnotGeometry(4, 1.5, 100, 16);
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0.0 },
+                    color1: { value: new THREE.Color(0x8A2BE2) },
+                    color2: { value: new THREE.Color(0xFF00C1) },
+                    scrollFactor: { value: 0.0 },
+                    mousePos: { value: new THREE.Vector3(0, 0, 0) },
+                    isHovering: { value: 0.0 }
+                },
+                vertexShader: `
+                    uniform float time;
+                    uniform vec3 mousePos;
+                    uniform float scrollFactor;
+                    uniform float isHovering;
+                    varying vec3 vPosition;
+                    void main() {
+                        vPosition = position;
+                        float displacement = sin(position.y * 5.0 + time) * 0.5 * (1.0 - isHovering);
+                        vec3 newPosition = position + normal * displacement;
+                        vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
+                        float dist = length(mvPosition.xyz - mousePos);
+                        float sizeFactor = 1.0 + (1.0 - clamp(dist / 20.0, 0.0, 1.0)) * 0.2;
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color1;
+                    uniform vec3 color2;
+                    uniform float scrollFactor;
+                    uniform float isHovering;
+                    varying vec3 vPosition;
+                    void main() {
+                        float intensity = 0.5 + sin(vPosition.y + scrollFactor * 5.0) * 0.5;
+                        vec3 finalColor = mix(color1, color2, intensity);
+                        gl_FragColor = vec4(finalColor, 1.0);
+                    }
+                `,
+                wireframe: true,
+                transparent: true,
+                depthTest: false
+            });
+            const model = new THREE.Mesh(geometry, material);
+            scene.add(model);
+            
+            // --- Lighting ---
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+            scene.add(ambientLight);
+
+            // --- Animation and Interaction Variables ---
+            let mouseX = 0;
+            let mouseY = 0;
+            const cameraTarget = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
+            const keyStates = {};
+            
+            camera.position.z = 10;
+
+            // --- Event Handlers ---
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            window.addEventListener('resize', onWindowResize);
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+                model.material.uniforms.mousePos.value.set(mouseX * 10, mouseY * 10, camera.position.z);
+            });
+
+            // Keyboard controls for WASD movement
+            document.addEventListener('keydown', (event) => {
+                keyStates[event.key.toLowerCase()] = true;
+            });
+            document.addEventListener('keyup', (event) => {
+                keyStates[event.key.toLowerCase()] = false;
+            });
+            
+            // Text hover effects
+            document.querySelectorAll('.text-fill-hover').forEach(p => {
+                p.addEventListener('mouseenter', () => {
+                    gsap.to(model.rotation, {
+                        x: "+=1.0",
+                        y: "+=1.0",
+                        duration: 1.5,
+                        ease: "power2.inOut"
+                    });
+                    gsap.to(model.material.uniforms.isHovering, {
+                        value: 1.0,
+                        duration: 0.5
+                    });
+                });
+                p.addEventListener('mouseleave', () => {
+                    gsap.to(model.material.uniforms.isHovering, {
+                        value: 0.0,
+                        duration: 0.5
+                    });
+                });
+            });
+
+
+            // --- GSAP and Scroll-based Animations ---
+            gsap.registerPlugin();
+            
+            // Animate fog and particle uniform on scroll
+            gsap.to(model.material.uniforms.scrollFactor, {
+                value: 1.0,
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1,
+                    onUpdate: (self) => {
+                        // Dynamically update the fog density based on scroll
+                        scene.fog.density = 0.03 + (self.progress * 0.04);
+                    }
+                }
+            });
+
+            // --- Animation Loop ---
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Update camera target based on keyboard input
+                const speed = 0.2;
+                if (keyStates['w']) cameraTarget.y += speed;
+                if (keyStates['s']) cameraTarget.y -= speed;
+                if (keyStates['a']) cameraTarget.x -= speed;
+                if (keyStates['d']) cameraTarget.x += speed;
+
+                // Smoothly move the camera to the target position
+                camera.position.lerp(cameraTarget, 0.05);
+
+                // Update model's rotation and shader time uniform
+                model.rotation.x += 0.005;
+                model.rotation.y += 0.005;
+                model.material.uniforms.time.value += 0.01;
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            // --- UI/UX Enhancements: Scroll Animations ---
+            const observerCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        // Optional: remove the class to allow re-triggering on scroll back up
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(observerCallback, {
+                root: null,
+                threshold: 0.1,
+                rootMargin: "0px"
+            });
+
+            const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
+            elementsToAnimate.forEach(el => {
+                observer.observe(el);
+            });
+        };
+    </script>
+</body>
+</html>
